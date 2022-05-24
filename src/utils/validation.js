@@ -6,21 +6,12 @@ const isValid = function(value) {
   return true
 }
 
-const checkData = (object) => {
+const isValidBody = (object) => {
     if (Object.keys(object).length > 0) {
       return false
     }else {
       return true;
     }
-  };
-  
-  const validTitle = (Title) => {
-    let correctTitle = ["Mr", "Mrs", "Miss"];
-    if (correctTitle.includes(Title)) {
-      return false
-    }else {
-      return true;
-    };
   };
   
   const validString = (String) => {
@@ -59,13 +50,5 @@ const checkData = (object) => {
   const isValidObjectId = (objectId) => {
     return mongoose.Types.ObjectId.isValid(objectId)
   }
-
-  const validDate = (data) => {
-    if(/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(data)){
-      return false;
-    }else{
-      return true;
-    }
-  }
   
-  module.exports = { isValid, checkData, validTitle, validString, validMobileNum, validEmail, validPwd, isValidObjectId ,validDate};
+  module.exports = { isValid, isValidBody, validString, validMobileNum, validEmail, validPwd, isValidObjectId};

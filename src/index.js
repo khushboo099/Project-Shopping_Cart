@@ -12,7 +12,7 @@ const multer= require("multer");
 app.use( multer().any())
 
 
-mongoose.connect("mongodb+srv://project-3_book_management:ICqOd1Lg5fRtZsMn@cluster0.vkzfn.mongodb.net/group21Database", {
+mongoose.connect("mongodb+srv://product_management:Rnr06LEBUzt7Ykwf@cluster0.r2r1ele.mongodb.net/group35Database", {
     useNewUrlParser: true
 })
 .then( () => console.log("MongoDb is connected.."))
