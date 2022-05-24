@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const isValid = function(value) {
   if(typeof value === 'undefined' || value === null) return false
   if(typeof value === 'string' && value.trim().length === 0) return false
+  if(typeof value === "object") return false
   return true
 }
 
@@ -51,4 +52,4 @@ const isValidBody = (object) => {
     return mongoose.Types.ObjectId.isValid(objectId)
   }
   
-  module.exports = { isValid, isValidBody, validString, validMobileNum, validEmail, validPwd, isValidObjectId};
+  module.exports = { isValid, isValidBody, validString, validMobileNum, validEmail, validPwd,isValidObjectId};

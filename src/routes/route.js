@@ -1,11 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
-const {createUser,loginUser} = require("../controllers/userController")
+const {createUser,loginUser, getProfile,updateUserProfile} = require("../controllers/userController")
+const {authentication, authorization} = require("../middleware/auth")
 
 //usreApi
 router.post("/register", createUser)
-router.post("/login", createUser,loginUser)
+router.post("/login", loginUser)
+router.get("/user/:userId/profile",authentication, getProfile)
+router.put("/user/:userId/profile", updateUserProfile)
 
 
 
