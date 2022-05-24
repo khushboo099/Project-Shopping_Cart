@@ -70,6 +70,8 @@ const createUser= async function(req, res) {
     if(validEmail(data.email)) return res.status(400).send({status: false, message: "Enter a valid email-id"})
     if(validMobileNum(data.phone)) return res.status(400).send({status: false, message: "Enter a 10-digit phone number exluding (+91)"})
     if(validPwd(data.password)) return res.status(400).send({status: false, message: "Password should be 8-15 characters long and must contain one of 0-9,A-Z,a-z and special characters"})
+
+    data.password = await bcrypt.hash(data.password, 10)
     
     
 
@@ -103,8 +105,12 @@ const loginUser = async (req, res) => {
         if(validPwd(data.password)) return res.status(400).send({status: false, message: "Enter a valid password"})
 
         //check email and password is in same or not
-        let getUserData = await userModel.findOne({email: data.email, password: data.password})
-        if(!getUserData) return res.status(400).send({status: false, message: "Email or password is invalid"})
+        let getEmailData = await userModel.findOne({email: data.email})
+        if(!getEmailData) return res.status(400).send({status: false, message: "Email is incorrect"})
+
+        //password
+        let passwordData = await bcrypt.compare(password, getEmailData.password)
+        if(!passwordData) return res.status(400).send({status: false, message: "Password is incorrect"})
 
         //token generation for the logged in user
         let token = jwt.sign({userId: getUserData._id,
