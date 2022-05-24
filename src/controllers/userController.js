@@ -129,13 +129,8 @@ const loginUser = async (req, res) => {
         if(!passwordData) return res.status(400).send({status: false, message: "Password is incorrect"})
 
         let userId = getEmailData._id
-        //token generation for the logged in user
-        let token = jwt.sign({userId: getEmailData._id,
-            iat: Math.floor(Date.now() / 1000),           //issue date
-            exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24  //expires in 24 hr
-        }, 
-        "Uranium Project-5"
-        );
+        let token = jwt.sign({ userId: getEmailData._id }, "Uranium Project-5", {expiresIn: '1d'});
+
         //set the headers
         res.status(200).setHeader("x-api-key", token);
 
