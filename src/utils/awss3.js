@@ -31,4 +31,6 @@ AWS.config.update({
     });
   
   };
+
+  module.exports.uploadFile = uploadFile
   
