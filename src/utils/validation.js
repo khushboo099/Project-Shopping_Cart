@@ -51,5 +51,22 @@ const isValidBody = (object) => {
   const isValidObjectId = (objectId) => {
     return mongoose.Types.ObjectId.isValid(objectId)
   }
+
+  const validPrice = (Number) => {
+    if (/^[1-9]\d*(\.\d+)?$/.test(Number)) {
+      return false
+    }else {
+      return true;
+    };
+  };
+
+  const validSize = (Size) => {
+    let correctSize = ["S", "XS", "M", "X", "L", "XXL", "XL"];
+    if (correctSize.includes(Size)) {
+      return false
+    }else {
+      return true;
+    };
+  };
   
-  module.exports = { isValid, isValidBody, validString, validMobileNum, validEmail, validPwd,isValidObjectId};
+  module.exports = { isValid, isValidBody, validString, validMobileNum, validEmail, validPwd,isValidObjectId,validPrice, validSize};

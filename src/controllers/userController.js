@@ -3,40 +3,41 @@ const bcrypt = require("bcrypt")
 const  { isValid,isValidBody, validString, validMobileNum, validEmail, validPwd, isValidObjectId} = require('../utils/validation')
 const AWS= require("aws-sdk")
 const jwt = require("jsonwebtoken")
+const {uploadFile} = require("../utils/awss3")
 
 
 //set aws config
-AWS.config.update({
-    accessKeyId: "AKIAY3L35MCRVFM24Q7U",
-    secretAccessKey: "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",
-    region: "ap-south-1"
-  })
+// AWS.config.update({
+//     accessKeyId: "AKIAY3L35MCRVFM24Q7U",
+//     secretAccessKey: "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",
+//     region: "ap-south-1"
+//   })
   
-  // file creation in aws s3 
-  let uploadFiles = async (file) => {
-    return new Promise(function (resolve, reject) {
-        let s3 = new AWS.S3({ apiVersion: '2006-03-01' });
-        let uploadParams = {
-            ACL: "public-read",
-            Bucket: "classroom-training-bucket",
-            Key: "group35/" + file.originalname, //HERE
-            Body: file.buffer
-        };
-        s3.upload(uploadParams, function (err, data) {
-            if (err) {
-                console.log(reject(err))
-                return (reject({ "Error": err }))
+//   // file creation in aws s3 
+//   let uploadFiles = async (file) => {
+//     return new Promise(function (resolve, reject) {
+//         let s3 = new AWS.S3({ apiVersion: '2006-03-01' });
+//         let uploadParams = {
+//             ACL: "public-read",
+//             Bucket: "classroom-training-bucket",
+//             Key: "group35/" + file.originalname, //HERE
+//             Body: file.buffer
+//         };
+//         s3.upload(uploadParams, function (err, data) {
+//             if (err) {
+//                 console.log(reject(err))
+//                 return (reject({ "Error": err }))
   
-            }
-             //console.log(resolve(data))
-             //console.log(data);
-            console.log("File Uploaded SuccessFully");
-            return resolve(data.Location)
-        });
+//             }
+//              //console.log(resolve(data))
+//              //console.log(data);
+//             console.log("File Uploaded SuccessFully");
+//             return resolve(data.Location)
+//         });
   
-    });
+//     });
   
-  };
+//   };
 
   //----------------------------------------------------------POST /register----------------------------------------------------------------
 
@@ -100,7 +101,7 @@ const createUser= async function(req, res) {
 
     //create a file
     if(files && files.length>0){
-        let uploadedFileURL= await uploadFiles( files[0] )
+        let uploadedFileURL= await uploadFile( files[0] )
         data.profileImage = uploadedFileURL
     }else{
        return res.status(400).send({status: false, message: "Profile Image is required" })
@@ -204,13 +205,18 @@ const updateUserProfile = async(req, res) => {
          if (data.fname) {
              if (validString(data.fname)) 
              return res.status(400).send({ status: false, message: "FirstName should be characters and should not contains any numbers" })
+             
+        }else{
+            if(!isValid(data.fname)) return res.status(400).send({status: false, message: "firstname is required to update the name"})
         }
          
         //validate lastname
          if (data.lname) {
              if (validString(data.lname)) 
              return res.status(400).send({ status: false, message: "LastName should be characters and should not contains any numbers" }) 
-         }
+         }else{
+            if(!isValid(data.lname)) return res.status(400).send({status: false, message: "lastname is required to update the name"})
+        }
 
          //validate email
          if (data.email) {
@@ -221,7 +227,7 @@ const updateUserProfile = async(req, res) => {
         if (isEmailAlredyPresent) 
             return res.status(400).send({ status: false, message: `Unable to update email. ${data.email} is already registered.` });
         }else{
-            return res.status(400).send({status: false, message: "email is required"})
+            if(!isValid(data.email)) return res.status(400).send({status: false, message: "emailId is required to update the email"})
         }
 
         //validate phone
@@ -232,7 +238,10 @@ const updateUserProfile = async(req, res) => {
              let isPhoneAlredyPresent = await userModel.findOne({ phone: data.phone })
              if (isPhoneAlredyPresent) 
                  return res.status(400).send({ status: false, message: `Unable to update phone. ${data.phone} is already registered.` });
-             }
+             }else{
+                if(!isValid(data.phone)) return res.status(400).send({status: false, message: "phone number is required to update the phone number"})
+            }
+
          //validate password and setting range of password.
              if(data.password){
             if(validPwd(data.password))
@@ -240,24 +249,25 @@ const updateUserProfile = async(req, res) => {
         //  let tempPassword = password
         //  var encryptedPassword = await bcrypt.hash(tempPassword,10)
         data.password = await bcrypt.hash(data.password, 10)
-             }
+             }else{
+                if(!isValid(data.password)) return res.status(400).send({status: false, message: "password is required to update the password"})
+            }
         
         //create file
         if(files && files.length>0){
-                    var uploadedFileURL= await uploadFiles( files[0] )
+                    var uploadedFileURL= await uploadFile( files[0] )
                     data.profileImage = uploadedFileURL
                 }else{
-                    res.status(400).send({ msg: "Profile Image is required to update" })
+                    res.status(400).send({status: false, message: "Profile Image is required to update" })
                 }
 
         // check address        
-            if(!data.address) return res.status(400).send({status: false, message: "Address is required"})
-
+            if(data.address){
             //convert json to parse 
             data.address = JSON.parse(data.address)
         
             //validate shipping address
-            if(isValid(data.address.shipping) && isValidBody(data.address.shipping)) return res.status(400).send({status: false, message: "shipping address should be with street, city and pincode"})
+           if(isValid(data.address.shipping) && isValidBody(data.address.shipping)) return res.status(400).send({status: false, message: "shipping address should be with street, city and pincode"})
         
             //check in shipping street,city and pincode is present or not
             if(!data.address.shipping.street) return res.status(400).send({status: false, message: "shipping street is required"})
@@ -271,11 +281,14 @@ const updateUserProfile = async(req, res) => {
             if(!data.address.billing.street) return res.status(400).send({status: false, message: "billing street is required"})
             if(!data.address.billing.city) return res.status(400).send({status: false, message: "billing city is required"})
             if(!data.address.billing.pincode) return res.status(400).send({status: false, message: "billing pincode is required"})
+            }else{
+                if(!isValid(data.address)) return res.status(400).send({status: false, message: "address is required to update the address"})
+            }
            
         //here we can update
         let changeProfileDetails = await userModel.findOneAndUpdate({ _id: userId }, data, { new: true })
-        return res.status(200).send({ status: true,message: "updated successfully", data: changeProfileDetails })
-    }    
+        return res.status(200).send({ status: true,message: "updated successfully", data: changeProfileDetails }) 
+    }  
         
     catch(err){
         res.status(500).send({status: false, Error: err.message})
