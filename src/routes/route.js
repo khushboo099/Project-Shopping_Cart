@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const {createUser,loginUser, getProfile,updateUserProfile} = require("../controllers/userController")
+const {createUser, loginUser, getProfile, updateUserProfile} = require("../controllers/userController")
 const {authentication, authorization} = require("../middleware/auth")
 
 //usreApi
