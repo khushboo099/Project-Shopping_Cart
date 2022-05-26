@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const {createUser, loginUser, getProfile, updateUserProfile} = require("../controllers/userController")
-const {createProduct} = require("../controllers/productController")
+const {createProduct, getProduct, getProductById, updateProduct, deleteProduct} = require("../controllers/productController")
 const {authentication, authorization} = require("../middleware/auth")
 
 //usreApi
@@ -13,6 +13,9 @@ router.put("/user/:userId/profile",authentication, authorization, updateUserProf
 
 //product api
 router.post("/products", createProduct)
-
+router.get("/products", getProduct)
+router.get("/products/:productId", getProductById)
+router.put("/products/:productId",updateProduct)
+router.delete("/products/:productId", deleteProduct)
 
 module.exports = router;
