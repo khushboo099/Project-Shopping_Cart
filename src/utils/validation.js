@@ -68,5 +68,9 @@ const isValidBody = (object) => {
       return true;
     };
   };
+
+  const isValidStatus = function(status) {
+    return ['pending', 'completed', 'cancelled'].indexOf(status) !== -1
+}
   
-  module.exports = { isValid, isValidBody, validString, validMobileNum, validEmail, validPwd,isValidObjectId,validPrice, validSize};
+  module.exports = { isValid, isValidBody, validString, validMobileNum, validEmail, validPwd,isValidObjectId,validPrice, validSize, isValidStatus};
