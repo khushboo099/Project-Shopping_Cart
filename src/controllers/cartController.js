@@ -41,7 +41,7 @@ const addCart = async(req, res) => {
              totalItems: 1
          }
          const newCart = await cartModel.create(addToCart)
-         return res.status(201).send({status: false, message: "cart created successfully", data: newCart})
+         return res.status(201).send({status: false, message: "cart created and product added to cart successfully", data: newCart})
      }
  }
 
@@ -50,11 +50,9 @@ const addCart = async(req, res) => {
      if(!isValidObjectId(cartId))  return res.status(400).send({status: false, message: "Invalid cartId"})
 
      let findRealCart = await cartModel.findOne({userId: userId})
-     console.log("1----",findRealCart)
      if(findRealCart._id != cartId) return res.status(400).send({status: false, message: "cartId is incorrect"})
 
      const findCart = await cartModel.findOne({_id: cartId})
-     console.log("2--->", findCart)
      if(!findCart) {
          const addToCart = {
              userId: userId,
@@ -101,6 +99,39 @@ const addCart = async(req, res) => {
 
 const updateCart = async (req, res) => {
     try{
+        const userId = req.params.userId
+        const data = req.body
+
+        const {cartId, productId, removeProduct} = data
+
+        if(!isValidObjectId(cartId)) return res.status(400).send({status: false, message: "Invalid CartId"})
+        const findCart = await cartModel.findOne({_id: cartId})
+        console.log("1-->", findCart)
+        if(!findCart) return res.status(400).send({status: false, messgae: "CartId does not exist"})
+
+        if(!isValidObjectId(productId)) return res.status(400).send({status: false, message: "Invalid ProductId"})
+        const findProduct = await productModel.findOne({_id: productId, isDeleted: false})
+        console.log("2-->", findProduct)
+        if(!findProduct) return res.status(400).send({status: false, messgae: "ProductId does not exist"})
+
+        if(!removeProduct) return res.status(400).send({status: false , message: "removeProduct is required"})
+        if(!/^[0|1]+$/.test(removeProduct)) return res.status(400).send({status: false, message:"removeProduct should be 0 when we can remove the product from cart and reduce quantity by 1"})
+
+        for(let i = 0; i < findCart.items.length; i++){
+            if(`${findCart.items[i].productId}` == `${findProduct._id}`){
+                if(removeProduct == 1 && findCart.items[i].quantity > 1){  //here we cant take 1 becoz reduce the quantity by 1
+                    findCart.items[i].quantity = (findCart.items[i].quantity - 1)
+                    findCart.save()
+                    const updateCart = await cartModel.findOneAndUpdate({_id: cartId}, {$inc: {totalPrice: -(findProduct.price)}, totalItems: findCart.items.length}, {new: true})
+                    console.log("3--->", updateCart)
+                    updateCart.items = findCart.items
+
+                    return res.status(200).send({status: false, message: "product added to the cart", data: updateCart})
+                }
+            }
+            return res.status(400).send({status: false, message: "productId does not exist in the cart"})
+        }
+
 
     }catch(err){
         return res.status(500).send({status: false, Error: err.message})
@@ -139,7 +170,7 @@ const deleteCart = async (req, res) => {
         let findUser = await userModel.findById({ _id: userId })
         if (!findUser) return res.status(400).send({ status: false, message: "userId doesn't exist" })
 
-        let findCart = await cartModel.findOne({ userId })
+        let findCart = await cartModel.findById( userId )
         if (!findCart) return res.status(400).send({ status: false, message: "cart doesn't exist by this userId" })
 
         let cartDeleting = await cartModel.findOneAndUpdate({ userId }, { $set: { items: [], totalPrice: 0, totalItems: 0 } })
