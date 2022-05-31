@@ -10,14 +10,19 @@ const  { isValid,isValidBody, validString, isValidObjectId} = require('../utils/
 const addCart = async(req, res) => {
     try{
         let data = req.body;
+
+        //check for body
         if (Object.keys(data) == 0) return res.status(400).send({ status: false, message: "Enter a details to add a products" })
 
+        //recieve value from data and store a own variable
         let cartId = data.cartId;
         let productID = data.productId;
         let userID = req.params.userId;
 
+        //validate userId
         if(!isValidObjectId(userID)) return res.status(400).send({status: false, message:"Not a valid UserID"})        
 
+        //when cartId is not present
         if (!cartId) {
             let checkCart = await cartModel.findOne({ userId: userID })
             if (checkCart) {
@@ -25,41 +30,42 @@ const addCart = async(req, res) => {
             }
         }
 
+        //when cartId is present
         if (cartId) {
             if(!isValidObjectId(cartId)) return res.status(400).send({status: false, message:"Not a valid cartId"})
             let findCart = await cartModel.findById({ _id: cartId })
-            if (!findCart)
-                return res.status(400).send({ status: false, message: `No cart with this Id - ${cartId}` })
+            if (!findCart) return res.status(400).send({ status: false, message: `No cart with this Id - ${cartId}` })
         }
 
-        
-        if (!productID) { return res.status(400).send({ status: false, message: "Please provide Product Id " }) }
+        //check for productID
+        if (!productID) return res.status(400).send({ status: false, message: "Please provide Product Id " })
+
+        //validate productID
         if(!isValidObjectId(productID)) return res.status(400).send({status: false, message:"Not a valid productId"})
 
-
-        if(req.body.quantity) return res.status(400).send({status: false, msg:"Do not need to give quantity"})
+        //check for quantity 
+        if(req.body.quantity) return res.status(400).send({status: false, message:"Do not need to give quantity"})
 
 
         //if (Object.keys userID) == 0) { return res.status(400).send({ status: false, message: "Please provide User Id " }) }
         
-
+        //check for userID
         let userExist = await userModel.findOne({ _id: userID });
-        if (!userExist) {
-            return res.status(404).send({ status: false, message: `No user found with this ${userID}` })
-        }
+        if (!userExist)  return res.status(404).send({ status: false, message: `No user found with this ${userID}` })
 
-
+        //check for cartId 
         let cartExist = await cartModel.findOne({ _id: cartId });
       
-
-
+        //if the cartId is exist
         if (cartExist) {
             
-            if (cartExist.userId != userID) {
-                return res.status(403).send({ status: false, message: "This cart does not belong to you. Please check the cart Id" })
-            }
+            //compareing the cartId is exist in valid userId
+            if (cartExist.userId != userID)  return res.status(403).send({ status: false, message: "This cart does not belong to you. Please check the cart Id" })
+
+            //take a null object varibale for storing keys
             let updateData = {}
 
+            //if the cartID is exist then check length is equal to zero
             if (cartExist.items.length == 0) {
                 let arr = []
 
@@ -79,6 +85,7 @@ const addCart = async(req, res) => {
                 return res.status(200).send({ status: true, message: "product added to cart & Updated Cart", data: updatedCart })
             }
 
+            //if the cartID is exist then check length is greater than zero and also is product equal or not
             for (let i = 0; i < cartExist.items.length; i++) {
                 if (cartExist.items[i].productId == productID) {
                     // console.log(i)
@@ -95,6 +102,7 @@ const addCart = async(req, res) => {
                     return res.status(200).send({ status: true, message: "product added to cart & Updated Cart", data: updatedCart })
                 }
             }
+            //if the cartID is exist then check length is greater than zero and also is product equal or not
             for (let j = 0; j < cartExist.items.length; j++) {
 
                 if (cartExist.items[j].productId != productID) {
@@ -114,7 +122,9 @@ const addCart = async(req, res) => {
                     return res.status(200).send({ status: true, message: "product added to cart & Updated Cart", data: updatedCart })
                 }
             }
-        } else {
+        }
+        //if the cartId is not exist
+        else {
             let newData = {}
             let arr = []
             newData.userId = userID;
