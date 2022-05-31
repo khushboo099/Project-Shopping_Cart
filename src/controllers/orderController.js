@@ -78,4 +78,85 @@ const orderCreation = async (req, res) => {
 
 
 
-module.exports = {orderCreation}
+const updateOrder = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const data = req.body;
+        
+        if (isValidBody(data)) 
+            return res.status(400).send({status: false,message: "Invalid request body."});
+        //extract params
+        const { orderId, status } = data;
+        if (!isValidObjectId(userId))
+            return res.status(400).send({ status: false, message: "Invalid userId in params." });
+        //finding user from userModel
+        const ExistUser = await userModel.findOne({ _id: userId });
+        if (!ExistUser) 
+            return res.status(400).send({status: false,message: `user doesn't exists for ${userId}`});
+        if (!orderId) 
+            return res.status(400).send({status: false,message: `Order doesn't exists for ${orderId}`});
+    
+        //verifying does the order belongs to user or not.
+        isUserOrder = await orderModel.findOne({ userId: userId });
+        if (!isUserOrder) 
+            return res.status(400).send({status: false,message: `Order doesn't belongs to ${userId}`});
+        if (!status) 
+            return res.status(400).send({status: false,message: "Staus is Manditatory"});
+        if (!isValidStatus(status)) 
+            return res.status(400).send({status: false,message: "It should be among this =>'pending','completed', or 'cancelled'."});
+    
+        //if cancellable is true then status can be updated to any of te choices.
+        if (isUserOrder.cancellable == true) {
+            if ((isValidStatus(status))) {
+                if (isUserOrder.status == 'pending') {
+                    if(status=='pending')
+                    return res.status(400).send({ status: false, message: `already in pending status.` })
+                    const updatingStatus = await orderModel.findOneAndUpdate({ _id: orderId }, {$set: { status: status }}, { new: true })
+                    return res.status(200).send({ status: true, message: `Successfully updated the order details.`, data: updatingStatus })
+                }
+    
+                //if order is in completed status then nothing can be changed/updated.
+                if (isUserOrder.status== 'completed') 
+                    return res.status(400).send({ status: false, message: `it's already in completed status.CanNot Update.`})
+                
+                //if order is already in cancelled status then nothing can be changed/updated.
+                if (isUserOrder.status == 'cancelled') 
+                    return res.status(400).send({ status: false, message: `it's already in cancelled status.CanNot Update.`})
+                
+            }
+        }
+        //for cancellable : false
+        if (isUserOrder.cancellable == false) {
+        if ((isValidStatus(status))) {
+        if (isUserOrder.status == 'pending') {
+            if (status) {
+                if (status == "cancelled") {
+                return res.status(400).send({ status: false, message: `Due to cancellable is false Cannot update` })
+                }
+                if (status == "pending") {
+                return res.status(400).send({ status: false, message: `Cannot update status from pending to pending.` })
+                }
+            const updateStatus = await orderModel.findOneAndUpdate({ _id: orderId }, {$set: { status: status }}, { new: true })
+            return res.status(200).send({ status: true, message: `Successfully updated the order details.`, data: updateStatus })
+        }
+    
+       //if order is in completed status then nothing can be changed/updated.
+        if (isUserOrder.status == 'completed') 
+        return res.status(400).send({ status: false, message: `CanNot Update because it's already in completed status.` })
+                
+       //if order is already in cancelled status then nothing can be changed/updated.
+       if (isUserOrder.status == 'cancelled') 
+         return res.status(400).send({ status: false, message: `CanNot Update because it's already in cancelled status.` })
+                
+            }
+        }
+        }
+    
+        } catch (err) {
+            return res.status(500).send({ status: false, message: err.message });
+        }
+    }
+
+
+
+module.exports = {orderCreation, updateOrder}
