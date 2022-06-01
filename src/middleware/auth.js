@@ -8,7 +8,9 @@ const authentication = async (req, res, next) => {
         if(typeof bearerHeader == "undefined") return res.status(403).send({ status: false, message: "Token is missing" });
 
          let bearerToken = bearerHeader.split(' ')
+        // console.log(bearerToken)
          let token = bearerToken[1];
+         //console.log(token)
 
         let decodedToken = jwt.verify(token, "Uranium Project-5")
         if(!decodedToken) return res.status(400).send({status: false , message: "Invalid token id"})

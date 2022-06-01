@@ -18,7 +18,7 @@ const orderSchema = new mongoose.Schema({
     totalItems: {type:Number, required: true, comment: "Holds total number of items in the cart"},
     totalQuantity: {type:Number, required: true, comment: "Holds total number of quantity in the cart"},
     cancellable: {type:Boolean, default: true},
-    status: {type:String, default: 'pending', enum:['pending','completed','canclled']},
+    status: {type:String, default: 'pending', enum:['pending','completed','cancelled']},
     deletedAt: {type:Date}, 
     isDeleted: {type:Boolean, default: false},
   

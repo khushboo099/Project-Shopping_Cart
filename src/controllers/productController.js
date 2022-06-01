@@ -1,7 +1,6 @@
 const productModel = require("../models/productModel")
 const  { isValid,isValidBody, validString, validMobileNum, validEmail, validPwd, isValidObjectId, validPrice, validSize} = require('../utils/validation')
 const {uploadFile} = require("../utils/awss3")
-const res = require("express/lib/response")
 
 
 
@@ -44,11 +43,19 @@ const createProduct= async function(req, res) {
     if(!data.currencyFormat) return res.status(400).send({status: false, message: "currency format  is required"})
     if(data.currencyFormat!=="₹") return res.status(400).send({status: false, message: " valid currencyformat i.e., ₹ is required"})
 
-    //check for size
-    if(!data.availableSizes) return res.status(400).send({status: false, message: "size is required"})
+    //check for size and validate sizes
+    //if(!data.availableSizes) return res.status(400).send({status: false, message: "size is required"})
+    if(isValid(data.availableSizes) && validString(data.availableSizes))  return res.status(400).send({ status: false, message: "Enter at least one available size" });
 
-    //validate size
-    if(validSize(data.availableSizes))  return res.status(400).send({status: false, message: "Size should be one of S,XS,M,X,L,XXL,XL"})
+    data.availableSizes =  JSON.parse(data.availableSizes);
+
+    for(let i = 0;  i < data.availableSizes.length; i++){
+      if(validSize(data.availableSizes[i])) {
+        return res.status(400).send({ status: false, message: "Sizes should one of these - 'S', 'XS', 'M', 'X', 'L', 'XXL' and 'XL'" })
+      }
+    }
+    // //validate size
+    // if(validSize(data.availableSizes))  return res.status(400).send({status: false, message: "Size should be one of S,XS,M,X,L,XXL,XL"})
    
     //check for style
     if(data.style){

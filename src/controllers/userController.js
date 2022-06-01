@@ -51,19 +51,22 @@ const createUser= async function(req, res) {
     if(isValidBody(data)) return res.status(400).send({status: false, message: "Enter user details"})
 
     //check key & value of Data is Present or not
-    if(!data.fname) return res.status(400).send({status: false, message: "FirstName is required"}) 
+    if(!data.fname) return res.status(400).send({status: false, message: "FirstName is required"})
     if(!data.lname) return res.status(400).send({status: false, message: "LastName is required"})
     if(!data.email) return res.status(400).send({status: false, message: "Email ID is required"})
     if(!data.phone) return res.status(400).send({status: false, message: "Mobile number is required"})
     //if(files.length == 0) return res.status(400).send({status: false, message: "Profile Image is not found"})
     if(!data.password) return res.status(400).send({status: false, message: "Password is required"})
+
+    //checking for address
     if(!data.address) return res.status(400).send({status: false, message: "Address is required"})
 
     //convert json to parse 
     data.address = JSON.parse(data.address)
 
     //validate shipping address
-    if(isValid(data.address.shipping) && isValidBody(data.address.shipping)) return res.status(400).send({status: false, message: "shipping address should be with street, city and pincode"})
+    //if(isValid(data.address)) return res.status(400).send({status: false, message: "Address should be in object and must contain shipping and billing address"})
+    if(!data.address.shipping) return res.status(400).send({status: false, message: "shipping address should be with street, city and pincode"})
 
     //check in shipping street,city and pincode is present or not
     if(!data.address.shipping.street) return res.status(400).send({status: false, message: "shipping street is required"})
@@ -71,7 +74,7 @@ const createUser= async function(req, res) {
     if(!data.address.shipping.pincode) return res.status(400).send({status: false, message: "shipping pincode is required"})
 
     //validate billing address
-    if(isValid(data.address.billing) && isValidBody(data.address.billing)) return res.status(400).send({status: false, message: "billing address should be with street, city and pincode"})
+    if(!data.address.billing) return res.status(400).send({status: false, message: "billing address should be with street, city and pincode"})
 
     //check in billing address street, city and pincode is present or not
     if(!data.address.billing.street) return res.status(400).send({status: false, message: "billing street is required"})
@@ -150,7 +153,7 @@ const loginUser = async (req, res) => {
         let userId = getEmailData._id
 
         //set the headers
-        res.status(200).setHeader("x-api-key", token);
+        //res.status(200).setHeader("x-api-key", token);
 
         res.status(200).send({status: true, message: "User login successfull", data: {userId: userId, token: token}})
         
@@ -221,7 +224,7 @@ const updateUserProfile = async(req, res) => {
          //validate email
          if (data.email) {
              if (validEmail(data.email)) 
-                 return res.status(400).send({ status: false, message: "Invalid request parameter, please provide email" })
+                 return res.status(400).send({ status: false, message: "Invalid request parameter, please provide valid email" })
         //check email is already exist            
         let isEmailAlredyPresent = await userModel.findOne({ email: data.email })
         if (isEmailAlredyPresent) 
@@ -233,7 +236,7 @@ const updateUserProfile = async(req, res) => {
         //validate phone
          if (data.phone) {
              if (validMobileNum(data.phone)) 
-                 return res.status(400).send({ status: false, message: "Invalid request parameter, please provide Phone number." })
+                 return res.status(400).send({ status: false, message: "Invalid request parameter, please provide valid and 10-digit indian Phone number exluding(+91)." })
              //check phone is already exist    
              let isPhoneAlredyPresent = await userModel.findOne({ phone: data.phone })
              if (isPhoneAlredyPresent) 
