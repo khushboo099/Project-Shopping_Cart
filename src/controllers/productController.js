@@ -37,7 +37,7 @@ const createProduct= async function(req, res) {
 
     //check for currecyId
     if(!data.currencyId) return res.status(400).send({status: false, message: "currencyId is required"})
-     if(data.currencyId!=="INR") return res.status(400).send({status: false, message: " valid currencyId i.e..,INR is required"})
+     if(data.currencyId !=="INR") return res.status(400).send({status: false, message: " valid currencyId i.e..,INR is required"})
 
      //check for currency format
     if(!data.currencyFormat) return res.status(400).send({status: false, message: "currency format  is required"})
@@ -50,7 +50,7 @@ const createProduct= async function(req, res) {
     data.availableSizes =  JSON.parse(data.availableSizes);
 
     for(let i = 0;  i < data.availableSizes.length; i++){
-      if(validSize(data.availableSizes[i])) {
+      if(!validSize(data.availableSizes[i])) {
         return res.status(400).send({ status: false, message: "Sizes should one of these - 'S', 'XS', 'M', 'X', 'L', 'XXL' and 'XL'" })
       }
     }
@@ -101,9 +101,9 @@ const getProduct = async(req, res) => {
 
         //filter
 
-        if(data?.size){
+        if(data?.size || typeof data.size == 'string'){
             data.size = data.size.toUpperCase()
-            if(validSize(data.size)) return res.status(400).send({status: false, message: "Size should be one of S,XS,M,X,L,XXL,XL"})
+            if(!validSize(data.size)) return res.status(400).send({status: false, message: "Size should be one of S,XS,M,X,L,XXL,XL"})
 
             conditions.availableSizes = {}
             conditions.availableSizes['$in'] = [data.size]
@@ -205,7 +205,9 @@ const getProductById = async function (req, res) {
           data.productImage = productImgUrl;
         }
     
-        if(isValid(data)) return res.status(400).send({ status: false, message: "Enter data to update product" });
+        if(isValidBody(data)) return res.status(400).send({ status: false, message: "Enter data to update product" });
+    
+        //if(isValid(data)) return res.status(400).send({ status: false, message: "Enter data to update product" });
     
        if(data?.isDeleted || data?.deletedAt) return res.status(400).send({ status: false, message: "Action forbidden" });
     

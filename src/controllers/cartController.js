@@ -143,7 +143,7 @@ const addCart = async(req, res) => {
 
             const newCart = await cartModel.create(newData)
 
-            return res.status(201).send({ status: true, message: "Carcart created and product added to cart successfullyt details", data: newCart })
+            return res.status(201).send({ status: true, message: "cart created and product added to cart successfullyt details", data: newCart })
 
 
         }
@@ -241,24 +241,26 @@ const getCart = async function (req, res) {
 
 const deleteCart = async (req, res) => {
     try {
-        let userId = req.params.userId
-
-        if (!isValidObjectId(userId)) return res.status(400).send({ status: false, message: "Invalid userId" })
-
-        let findUser = await userModel.findById({ _id: userId })
-        if (!findUser) return res.status(400).send({ status: false, message: "userId doesn't exist" })
-
-        let findCart = await cartModel.findById( userId )
-        if (!findCart) return res.status(400).send({ status: false, message: "cart doesn't exist by this userId" })
-
-        let cartDeleting = await cartModel.findOneAndUpdate({ userId }, { $set: { items: [], totalPrice: 0, totalItems: 0 } })
-        console.log(cartDeleting)
-        return res.status(204).send({ status: true, message: "cart deleted Successfully"})
-
-    } catch (err) {
-        return res.status(500).send({ status: false, Error: err.message })
+        let userId = req.params.userId;
+    
+        //checking if the cart exist with this userId or not
+        let findCart = await cartModel.findOne({ userId: userId });
+        if(!findCart) return res.status(404).send({ status: false, message: `No cart found with this "${userId}" userId` });
+    
+        //checking for an empty cart
+        if(findCart.items.length == 0) return res.status(400).send({ status: false, message: "Cart is already empty" });
+    
+        let delCart = await cartModel.findByIdAndUpdate(
+          {_id: findCart._id},
+          {items: [], totalPrice: 0, totalItems: 0},
+          {new: true}
+        )
+    
+        res.status(200).send({ status: true, message: "Products removed successfully", data: delCart })
+      } catch (err) {
+        res.status(500).send({ status: false, error: err.message })
+      }
     }
-}
 
 
 module.exports = {addCart, updateCart, getCart, deleteCart}

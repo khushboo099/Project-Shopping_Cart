@@ -60,17 +60,21 @@ const isValidBody = (object) => {
     };
   };
 
-  const validSize = (Size) => {
-    let correctSize = ["S", "XS", "M", "X", "L", "XXL", "XL"];
-    if (correctSize.includes(Size)) {
-      return false
-    }else {
-      return true;
-    };
-  };
+  const isValidImage = (image) => {
+    if ((/.*\.(jpeg|jpg|png)$/).test(image.originalname)) return true;
+    return false
+}
+
+  const validSize = (sizes) => {
+    return ["S", "XS","M","X", "L","XXL", "XL"].includes(sizes);
+  }
 
   const isValidStatus = function(status) {
     return ['pending', 'completed', 'cancelled'].indexOf(status) !== -1
 }
+
+const isValidPincode = (num) => {
+  return /^[0-9]{6}$/.test(num);
+}
   
-  module.exports = { isValid, isValidBody, validString, validMobileNum, validEmail, validPwd,isValidObjectId,validPrice, validSize, isValidStatus};
+  module.exports = { isValid, isValidBody, validString, validMobileNum, validEmail, validPwd,isValidObjectId,validPrice, validSize, isValidStatus, isValidImage, isValidPincode};

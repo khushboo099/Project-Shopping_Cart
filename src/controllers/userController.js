@@ -1,6 +1,6 @@
 const userModel = require("../models/userModel")
 const bcrypt = require("bcrypt")
-const  { isValid,isValidBody, validString, validMobileNum, validEmail, validPwd, isValidObjectId} = require('../utils/validation')
+const  { isValid,isValidBody, validString, validMobileNum, validEmail, validPwd, isValidObjectId, isValidImage,isValidPincode} = require('../utils/validation')
 const AWS= require("aws-sdk")
 const jwt = require("jsonwebtoken")
 const {uploadFile} = require("../utils/awss3")
@@ -55,7 +55,6 @@ const createUser= async function(req, res) {
     if(!data.lname) return res.status(400).send({status: false, message: "LastName is required"})
     if(!data.email) return res.status(400).send({status: false, message: "Email ID is required"})
     if(!data.phone) return res.status(400).send({status: false, message: "Mobile number is required"})
-    //if(files.length == 0) return res.status(400).send({status: false, message: "Profile Image is not found"})
     if(!data.password) return res.status(400).send({status: false, message: "Password is required"})
 
     //checking for address
@@ -96,18 +95,20 @@ const createUser= async function(req, res) {
     if(validPwd(data.password)) return res.status(400).send({status: false, message: "Password should be 8-15 characters long and must contain one of 0-9,A-Z,a-z and special characters"})
 
     //create password to hash password
-    data.password = await bcrypt.hash(data.password, 10)
+    const salt = await bcrypt.genSalt(10)
+    data.password = await bcrypt.hash(data.password, salt)
 
     //check email and password is already exist or not
     let checkUniqueValues = await userModel.findOne({$or: [{phone: data.phone}, {email: data.email}]})
     if(checkUniqueValues) return res.status(400).send({status: false, message: "E-Mail or phone number already exist"})
 
     //create a file
-    if(files && files.length>0){
+    if(files.length == 0) return res.status(400).send({status: false, message: "Profile Image is required"})
+    if(!isValidImage(files && files.length>0)){
         let uploadedFileURL= await uploadFile( files[0] )
         data.profileImage = uploadedFileURL
-    }else{
-       return res.status(400).send({status: false, message: "Profile Image is required" })
+     }else{
+        return res.status(400).send({status: false, message: "Image is not a valid format"})
     }
     
     // here we can start user creation
@@ -209,17 +210,17 @@ const updateUserProfile = async(req, res) => {
              if (validString(data.fname)) 
              return res.status(400).send({ status: false, message: "FirstName should be characters and should not contains any numbers" })
              
-        }else{
-            if(!isValid(data.fname)) return res.status(400).send({status: false, message: "firstname is required to update the name"})
-        }
+         }//else{
+        //     if(!isValid(data.fname)) return res.status(400).send({status: false, message: "firstname is required to update the name"})
+        // }
          
         //validate lastname
          if (data.lname) {
              if (validString(data.lname)) 
              return res.status(400).send({ status: false, message: "LastName should be characters and should not contains any numbers" }) 
-         }else{
-            if(!isValid(data.lname)) return res.status(400).send({status: false, message: "lastname is required to update the name"})
-        }
+         }//else{
+        //     if(!isValid(data.lname)) return res.status(400).send({status: false, message: "lastname is required to update the name"})
+        // }
 
          //validate email
          if (data.email) {
@@ -229,9 +230,9 @@ const updateUserProfile = async(req, res) => {
         let isEmailAlredyPresent = await userModel.findOne({ email: data.email })
         if (isEmailAlredyPresent) 
             return res.status(400).send({ status: false, message: `Unable to update email. ${data.email} is already registered.` });
-        }else{
-            if(!isValid(data.email)) return res.status(400).send({status: false, message: "emailId is required to update the email"})
-        }
+        }//else{
+           // if(!isValid(data.email)) return res.status(400).send({status: false, message: "emailId is required to update the email"})
+        //}
 
         //validate phone
          if (data.phone) {
@@ -241,28 +242,26 @@ const updateUserProfile = async(req, res) => {
              let isPhoneAlredyPresent = await userModel.findOne({ phone: data.phone })
              if (isPhoneAlredyPresent) 
                  return res.status(400).send({ status: false, message: `Unable to update phone. ${data.phone} is already registered.` });
-             }else{
-                if(!isValid(data.phone)) return res.status(400).send({status: false, message: "phone number is required to update the phone number"})
-            }
+             }//else{
+                //if(!isValid(data.phone)) return res.status(400).send({status: false, message: "phone number is required to update the phone number"})
+            //}
 
          //validate password and setting range of password.
              if(data.password){
             if(validPwd(data.password))
             return res.status(400).send({ status: false, message: 'Password should be 8-15 characters long and must contain one of 0-9,A-Z,a-z and special characters' })
-        //  let tempPassword = password
-        //  var encryptedPassword = await bcrypt.hash(tempPassword,10)
-        data.password = await bcrypt.hash(data.password, 10)
-             }else{
-                if(!isValid(data.password)) return res.status(400).send({status: false, message: "password is required to update the password"})
-            }
+            data.password = await bcrypt.hash(data.password, 10)
+             }//else{
+                //if(!isValid(data.password)) return res.status(400).send({status: false, message: "password is required to update the password"})
+            //}
         
         //create file
         if(files && files.length>0){
                     var uploadedFileURL= await uploadFile( files[0] )
                     data.profileImage = uploadedFileURL
-                }else{
-                    res.status(400).send({status: false, message: "Profile Image is required to update" })
-                }
+                }//else{
+                  //  res.status(400).send({status: false, message: "Profile Image is required to update" })
+                //}
 
         // check address        
             if(data.address){
@@ -297,6 +296,7 @@ const updateUserProfile = async(req, res) => {
         res.status(500).send({status: false, Error: err.message})
     }
 }
+
 
 
   module.exports = {createUser, loginUser, getProfile,updateUserProfile}
