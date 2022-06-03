@@ -114,6 +114,8 @@ const getProduct = async(req, res) => {
 
         //filter
 
+        // Check size is valid or not
+
         if(data?.size || typeof data.size == 'string'){
             data.size = data.size.toUpperCase()
             if(!validSize(data.size)) return res.status(400).send({status: false, message: "Size should be one of S,XS,M,X,L,XXL,XL"})
@@ -210,6 +212,8 @@ const getProductById = async function (req, res) {
     
         let data = req.body;
         let files = req.files
+
+        if(isValidBody(data)) return res.status(400).send({status: false, message: "Enter product details"})
     
         //checking for product image
         if(files.length > 0) {
