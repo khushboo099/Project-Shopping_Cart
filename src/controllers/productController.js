@@ -45,15 +45,28 @@ const createProduct= async function(req, res) {
 
     //check for size and validate sizes
     //if(!data.availableSizes) return res.status(400).send({status: false, message: "size is required"})
+    // if(isValid(data.availableSizes) && validString(data.availableSizes))  return res.status(400).send({ status: false, message: "Enter at least one available size" });
+
+    // data.availableSizes =  JSON.parse(data.availableSizes);
+
+    // for(let i = 0;  i < data.availableSizes.length; i++){
+    //   if(!validSize(data.availableSizes[i])) {
+    //     return res.status(400).send({ status: false, message: "Sizes should one of these - 'S', 'XS', 'M', 'X', 'L', 'XXL' and 'XL'" })
+    //   }
+    // }
+
+
+    //check for size and validate sizes
+    if(!data.availableSizes) return res.status(400).send({status: false, message: "size is required"})
     if(isValid(data.availableSizes) && validString(data.availableSizes))  return res.status(400).send({ status: false, message: "Enter at least one available size" });
 
-    data.availableSizes =  JSON.parse(data.availableSizes);
-
-    for(let i = 0;  i < data.availableSizes.length; i++){
-      if(!validSize(data.availableSizes[i])) {
-        return res.status(400).send({ status: false, message: "Sizes should one of these - 'S', 'XS', 'M', 'X', 'L', 'XXL' and 'XL'" })
-      }
+    data.availableSizes = data.availableSizes.split(",")
+    console.log(data.availableSizes)
+    for (let i = 0; i < data.availableSizes.length; i++) {
+        if (!["S", "XS", "M", "X", "L", "XXL", "XL"].includes(data.availableSizes[i]))
+            return res.status(400).send({ status: false, message: "Avaliable Size CAN BE S,XS,M,X,L,XXL,XL.in body give like this S,XL type" })
     }
+  
     // //validate size
     // if(validSize(data.availableSizes))  return res.status(400).send({status: false, message: "Size should be one of S,XS,M,X,L,XXL,XL"})
    
@@ -268,18 +281,30 @@ const getProductById = async function (req, res) {
           if(isValid(data.style) && validString(data.style)) return res.status(400).send({ status: false, message: "Style should be valid an does not contain numbers" });
         }
 
+        // if(data?.availableSizes) {
+        //     //checking for available Sizes of the products
+        //     if(isValid(data.availableSizes) && validString(data.availableSizes))  return res.status(400).send({ status: false, message: "Enter at least one available size" });
+      
+        //     data.availableSizes =  JSON.parse(data.availableSizes);
+      
+        //     for(let i = 0;  i < data.availableSizes.length; i++){
+        //       if(validSize(data.availableSizes[i])) {
+        //         return res.status(400).send({ status: false, message: "Sizes should one of these - 'S', 'XS', 'M', 'X', 'L', 'XXL' and 'XL'" })
+        //       }
+        //     }
+        //   }
+
         if(data?.availableSizes) {
-            //checking for available Sizes of the products
-            if(isValid(data.availableSizes) && validString(data.availableSizes))  return res.status(400).send({ status: false, message: "Enter at least one available size" });
-      
-            data.availableSizes =  JSON.parse(data.availableSizes);
-      
-            for(let i = 0;  i < data.availableSizes.length; i++){
-              if(validSize(data.availableSizes[i])) {
-                return res.status(400).send({ status: false, message: "Sizes should one of these - 'S', 'XS', 'M', 'X', 'L', 'XXL' and 'XL'" })
-              }
-            }
-          }
+          //checking for available Sizes of the products
+          if(isValid(data.availableSizes) && validString(data.availableSizes))  return res.status(400).send({ status: false, message: "Enter at least one available size" });
+    
+            data.availableSizes = data.availableSizes.split(",")
+          console.log(data.availableSizes)
+          for (let i = 0; i < data.availableSizes.length; i++) {
+            if (!["S", "XS", "M", "X", "L", "XXL", "XL"].includes(data.availableSizes[i]))
+            return res.status(400).send({ status: false, message: "Avaliable Size CAN BE S,XS,M,X,L,XXL,XL" })
+    }
+        }
         
         //checking for installments in data
         if(data?.installments) {

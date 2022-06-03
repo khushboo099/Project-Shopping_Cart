@@ -69,6 +69,7 @@ const isValidBody = (object) => {
     return ["S", "XS","M","X", "L","XXL", "XL"].includes(sizes);
   }
 
+
   const isValidStatus = function(status) {
     return ['pending', 'completed', 'cancelled'].indexOf(status) !== -1
 }
