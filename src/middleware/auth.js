@@ -5,7 +5,8 @@ const userModel = require('../models/userModel');
 const authentication = async (req, res, next) => {
     try{
         let bearerHeader = req.headers.authorization;
-        if(typeof bearerHeader == "undefined") return res.status(403).send({ status: false, message: "Token is missing" });
+        if(typeof bearerHeader == "undefined") 
+        return res.status(403).send({ status: false, message: "Token is missing" });
 
          let bearerToken = bearerHeader.split(' ')
         // console.log(bearerToken)
@@ -13,7 +14,8 @@ const authentication = async (req, res, next) => {
          //console.log(token)
 
         let decodedToken = jwt.verify(token, "Uranium Project-5")
-        if(!decodedToken) return res.status(400).send({status: false , message: "Invalid token id"})
+        if(!decodedToken) 
+        return res.status(400).send({status: false , message: "Invalid token id"})
         req.decodedToken = decodedToken
         next()
     }catch(err){
@@ -29,7 +31,8 @@ const authorization = async (req, res, next) => {
     let userLogging;
 
     if(req.params?.userId){
-      if (!isValidObjectId(req.params.userId)) return res.status(400).send({ status: false, message: "Enter a valid user id" });
+      if (!isValidObjectId(req.params.userId)) 
+      return res.status(400).send({ status: false, message: "Enter a valid user id" });
       let userData = await userModel.findById(req.params.userId);
       if (!userData) return res.status(404).send({ status: false, message: "Error! Please check user id and try again" });
       userLogging = userData._id.toString();
@@ -37,7 +40,8 @@ const authorization = async (req, res, next) => {
 
     if (!userLogging) return res.status(400).send({ status: false, message: "User Id is required" });
 
-    if (loggedInUser !== userLogging) return res.status(403).send({ status: false, message: 'Error, authorization failed' })
+    if (loggedInUser !== userLogging) 
+    return res.status(403).send({ status: false, message: 'Error, authorization failed' })
     next()
   } catch (err) {
     res.status(500).send({ status: false, error: err.message })
