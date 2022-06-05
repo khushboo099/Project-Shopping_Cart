@@ -107,6 +107,7 @@ const createProduct= async function(req, res) {
 
     let productData= await productModel.create(data)
     res.status(201).send({status: true, message: "created successfully", data: productData})
+    
     }catch(err){
         res.status(500).send({status: false, Error: err.message})
     }
@@ -189,6 +190,7 @@ const getProduct = async(req, res) => {
         if(filterProducts.length == 0) 
         return res.status(404).send({status: false, message: "No products foundd"})
         return res.status(200).send({status: true, count: filterProducts.length, message: "success", data: filterProducts})
+
     }catch(err){
         res.status(500).send({status: false, Error: err.message})
     }
@@ -361,6 +363,7 @@ const getProductById = async function (req, res) {
     
         let updatedProduct = await productModel.findByIdAndUpdate( {_id: productId}, data,{new: true})
         res.status(200).send({ status: true, message: "Product updated successfully", data: updatedProduct })
+
       }catch(err){
         res.status(500).send({ status: false, Error: err.message })
       }
@@ -382,7 +385,7 @@ const getProductById = async function (req, res) {
         }else{
             return res.status(400).send({ status:false, message: "Product is alredy deleted."})
         }
-        
+
     } catch (err) {
       res.status(500).send({ status: false, Error: err.message })
     }

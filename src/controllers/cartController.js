@@ -54,7 +54,6 @@ const addCart = async (req, res) => {
         if (req.body.quantity)
             return res.status(400).send({ status: false, message: "Do not need to give quantity" })
 
-
         //check for userID
         let userExist = await userModel.findOne({ _id: userID });
         if (!userExist)
@@ -160,9 +159,8 @@ const addCart = async (req, res) => {
             const newCart = await cartModel.create(newData)
 
             return res.status(201).send({ status: true, message: "cart created and product added to cart successfullyt details", data: newCart })
-
-
         }
+
     } catch (err) {
         return res.status(500).send({ status: false, Error: err.message })
     }
@@ -202,8 +200,6 @@ const updateCart = async (req, res) => {
         if (!findProduct) 
         return res.status(400).send({ status: false, messgae: "ProductId does not exist" })
 
-
-
         if (removeProduct == 1) {
             for (let i = 0; i < findCart.items.length; i++) {
                 if (findCart.items[i].productId == productId) {
@@ -234,6 +230,7 @@ const updateCart = async (req, res) => {
                 }
             }
         }
+
     } catch (err) {
         return res.status(500).send({ status: false, Error: err.message })
     }
@@ -282,7 +279,7 @@ const deleteCart = async (req, res) => {
         )
 
         res.status(200).send({ status: true, message: "Products removed successfully", data: delCart })
-        
+
     } catch (err) {
         res.status(500).send({ status: false, error: err.message })
     }

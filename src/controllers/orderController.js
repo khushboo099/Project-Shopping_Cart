@@ -18,6 +18,7 @@ const orderCreation = async (req, res) => {
         //validating userId
         if (!isValidObjectId(userId)) 
             return res.status(400).send({ status: false, message: "Invalid userId in params." });
+            
         const ExistUser = await userModel.findOne({ _id: userId });
         if (!ExistUser) 
             return res.status(400).send({status: false,message: `user doesn't exists for ${userId}`});
@@ -71,7 +72,7 @@ const orderCreation = async (req, res) => {
         //Empty the cart after the successfull order
         await cartModel.findOneAndUpdate({ _id: cartId, userId: userId }, { $set: {items: [],totalPrice: 0,totalItems: 0}});
         return res.status(200).send({ status: true, message: "Order placed successfully.", data: finalOrder });
-        
+
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message });
     }
