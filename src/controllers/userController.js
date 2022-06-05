@@ -170,8 +170,7 @@ const getProfile = async function (req, res) {
         if(!userProfile)
         return res.status(400).send({status: false, message: "User doesn't exist"})
         else
-        return res.status(200).send({status: true, message: "User profile details", data: userProfile})
-        
+        return res.status(200).send({status: true, message: "User profile details", data: userProfile})        
 
     }catch(err){
         res.status(500).send({status: false, Error: err.message})

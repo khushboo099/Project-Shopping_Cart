@@ -43,8 +43,10 @@ const authorization = async (req, res, next) => {
     if (loggedInUser !== userLogging) 
     return res.status(403).send({ status: false, message: 'Error, authorization failed' })
     next()
+    
   } catch (err) {
     res.status(500).send({ status: false, error: err.message })
   }
 }
+
 module.exports = { authentication, authorization };

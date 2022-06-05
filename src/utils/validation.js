@@ -10,7 +10,7 @@ const isValid = function(value) {
 const isValidBody = (object) => {
     if (Object.keys(object).length > 0) {
       return false
-    }else {
+    } else {
       return true;
     }
   };

@@ -382,6 +382,7 @@ const getProductById = async function (req, res) {
         }else{
             return res.status(400).send({ status:false, message: "Product is alredy deleted."})
         }
+        
     } catch (err) {
       res.status(500).send({ status: false, Error: err.message })
     }

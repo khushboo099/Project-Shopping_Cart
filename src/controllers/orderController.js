@@ -71,6 +71,7 @@ const orderCreation = async (req, res) => {
         //Empty the cart after the successfull order
         await cartModel.findOneAndUpdate({ _id: cartId, userId: userId }, { $set: {items: [],totalPrice: 0,totalItems: 0}});
         return res.status(200).send({ status: true, message: "Order placed successfully.", data: finalOrder });
+        
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message });
     }
