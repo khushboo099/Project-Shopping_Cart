@@ -7,13 +7,13 @@ const {addCart, getCart, updateCart, deleteCart} = require("../controllers/cartC
 const {orderCreation, updateOrder} = require("../controllers/orderController")
 const {authentication, authorization} = require("../middleware/auth")
 
-//user Api
+//user API
 router.post("/register", createUser)
 router.post("/login", loginUser)
 router.get("/user/:userId/profile",authentication,  authorization, getProfile)
 router.put("/user/:userId/profile",authentication, authorization, updateUserProfile)
 
-//product api
+//product API
 router.post("/products", createProduct)
 router.get("/products", getProduct)
 router.get("/products/:productId", getProductById)
@@ -26,7 +26,7 @@ router.put("/users/:userId/cart",authentication, authorization, updateCart)
 router.get("/users/:userId/cart",authentication, authorization, getCart)
 router.delete("/users/:userId/cart",authentication, authorization, deleteCart)
 
-//order api
+//order API
 router.post("/users/:userId/orders",authentication, authorization, orderCreation)
 router.put("/users/:userId/orders",authentication, authorization, updateOrder)
 
