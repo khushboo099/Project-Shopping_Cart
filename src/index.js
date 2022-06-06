@@ -8,7 +8,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const multer= require("multer");
-//const { AppConfig } = require('aws-sdk');
+
 app.use( multer().any())
 
 

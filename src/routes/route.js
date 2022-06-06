@@ -7,7 +7,7 @@ const {addCart, getCart, updateCart, deleteCart} = require("../controllers/cartC
 const {orderCreation, updateOrder} = require("../controllers/orderController")
 const {authentication, authorization} = require("../middleware/auth")
 
-//usreApi
+//user Api
 router.post("/register", createUser)
 router.post("/login", loginUser)
 router.get("/user/:userId/profile",authentication,  authorization, getProfile)

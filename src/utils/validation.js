@@ -78,4 +78,4 @@ const isValidPincode = (num) => {
   return /^[0-9]{6}$/.test(num);
 }
   
-  module.exports = { isValid, isValidBody, validString, validMobileNum, validEmail, validPwd,isValidObjectId,validPrice, validSize, isValidStatus, isValidImage, isValidPincode};
+module.exports = { isValid, isValidBody, validString, validMobileNum, validEmail, validPwd,isValidObjectId,validPrice, validSize, isValidStatus, isValidImage, isValidPincode};
