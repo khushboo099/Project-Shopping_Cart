@@ -18,6 +18,7 @@ const authentication = async (req, res, next) => {
       return res.status(400).send({ status: false, message: "Invalid token id" })
     req.decodedToken = decodedToken
     next()
+    
   } catch (err) {
     if (err.message == "jwt expired") return res.status(400).send({ status: false, message: "JWT token has expired, login again" })
     if (err.message == "invalid signature") return res.status(400).send({ status: false, message: "Token is incorrect" })

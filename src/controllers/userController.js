@@ -1,5 +1,6 @@
 const userModel = require("../models/userModel")
 const bcrypt = require("bcrypt")
+
 const { isValid, isValidBody, validString, validMobileNum, validEmail, validPwd, isValidObjectId, isValidImage, isValidPincode } = require('../utils/validation')
 const AWS = require("aws-sdk")
 const jwt = require("jsonwebtoken")

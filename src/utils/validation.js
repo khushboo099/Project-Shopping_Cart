@@ -36,8 +36,7 @@ const isValidBody = (object) => {
       return false
     }else {
       return true;
-    }
-      
+    }      
   };
   
   const validPwd = (Password) => {

@@ -30,7 +30,7 @@ router.delete("/users/:userId/cart",authentication, authorization, deleteCart)
 router.post("/users/:userId/orders",authentication, authorization, orderCreation)
 router.put("/users/:userId/orders",authentication, authorization, updateOrder)
 
-// if api is invalid OR wrong URL
+// if API is invalid OR wrong URL
 router.all("/*", function (req, res) {
     res.status(404).send({ status: false, msg: "The api you requested is not available" });
   });

@@ -11,7 +11,6 @@ const multer= require("multer");
 
 app.use( multer().any())
 
-
 mongoose.connect("mongodb+srv://product_management:Rnr06LEBUzt7Ykwf@cluster0.r2r1ele.mongodb.net/group35Database", {
     useNewUrlParser: true
 })
@@ -20,7 +19,6 @@ mongoose.connect("mongodb+srv://product_management:Rnr06LEBUzt7Ykwf@cluster0.r2r
 
 
 app.use('/', route)
-
 
 app.listen(process.env.PORT || 3000, function () {
     console.log('Express app running on port ' + (process.env.PORT || 3000))

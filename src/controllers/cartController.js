@@ -6,7 +6,6 @@ const { isValid, isValidBody, validString, isValidObjectId } = require('../utils
 
 
 //---------------------------------------------------Post Api------------------------------------------------------
-
 const addCart = async (req, res) => {
     try {
         let data = req.body;

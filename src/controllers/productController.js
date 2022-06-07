@@ -1,8 +1,7 @@
 const productModel = require("../models/productModel")
+
 const { isValid, isValidBody, validString, validMobileNum, validEmail, validPwd, isValidObjectId, validPrice, validSize } = require('../utils/validation')
 const { uploadFile } = require("../utils/awss3")
-
-
 
 ////=====================================product api post===================================
 const createProduct = async function (req, res) {

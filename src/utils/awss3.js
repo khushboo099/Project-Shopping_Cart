@@ -27,10 +27,8 @@ AWS.config.update({
              //console.log(resolve(data))
             console.log("File Uploaded SuccessFully");
             return resolve(data.Location)
-        });
-  
-    });
-  
+        });  
+    });  
   };
 
 module.exports.uploadFile = uploadFile
